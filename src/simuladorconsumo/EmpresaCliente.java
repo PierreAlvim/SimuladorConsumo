@@ -5,6 +5,7 @@
  */
 package simuladorconsumo;
 
+import databasejson.SimpleDataConsumo;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -88,70 +89,97 @@ public class EmpresaCliente extends Empresa {
     public Double calculoCustosCredit(EmpresaGeradora empG) {
 
         //Se a cota não foi otimizada
-        if (cota <= 0)
-            cota = calculoCreditosInicial() / empG.geracaoMediaMensal();
+        if (cota <= 0) {
+            cota = calculoCreditoMedio() / empG.geracaoMediaMensal();
+        }
         Double credEx = 0.;
-        for (InfoMensal d : dadosMensais) {
-            Double credBasico = empG.getGeracaoMes(d.getMes()).getGeracao() * cota;
-            d.setCreditoGerado(credBasico);
-            d.setConsumoMinimo(getConsumoMinimo());
+        for (InfoMensal im : dadosMensais) {
+            Double credBasico = empG.getGeracaoMes(im.getMes()).getGeracao() * cota;
+            im.setCreditoGerado(credBasico);
+            im.setConsumoMinimo(getConsumoMinimo());
             //double resto = 0;
             if (credBasico > 0) {
-                double creditoTotal = d.getCreditoGerado() + credEx;
+                double creditoTotal = im.getCreditoGerado() + credEx;
 
-                //Calculo custo de comum da distribuidade
-                d.setCustoDist(d.getConsumo() * tarifaMedia);
+                //Calculo custo de consumo da distribuidora
+                im.setCustoAntigo(im.getConsumo() * tarifaMedia);
 
                 //caso o credito seja maior que o cosumo calcula o exedente
-                if (creditoTotal > d.getConsumo()) {
-                    credEx = creditoTotal - d.getConsumo();
-                    d.setCreditoGasto(d.getConsumo());
-                } else{
-                    d.setCreditoGasto(creditoTotal); //todo o credito é gasto
-                    credEx=0.;
+                if (creditoTotal > im.getConsumo()) {
+                    credEx = creditoTotal - im.getConsumo();
+                    im.setCreditoGasto(im.getConsumo());
+                } else {
+                    im.setCreditoGasto(creditoTotal); //todo o credito é gasto
+                    credEx = 0.;
                 }
 
                 //Calculo custo consórsio
-                if (d.getConsumo() >= (d.getCreditoGasto() + getConsumoMinimo()))
-                    d.setCustoCons(tarifaMedia * (d.getConsumo() - d.getCreditoGasto())
-                            + tarifaMedia * (1 - descontoAplicado) * d.getCreditoGasto());
-                else
-                    d.setCustoCons(tarifaMedia * getConsumoMinimo()
-                            + tarifaMedia * (1 - descontoAplicado) * d.getCreditoGasto());
+                if (im.getConsumo() >= (im.getCreditoGasto() + getConsumoMinimo())) {
+                    if (ParametrosConsumo.COBRANCA_IMEDIATA) {
+                        im.setCustoCons(tarifaMedia * (1 - descontoAplicado) * im.getCreditoGerado());
+                    } else {
+                        im.setCustoCons(tarifaMedia * (1 - descontoAplicado) * im.getCreditoGasto());
+                    }
+                    im.setCustoDist(tarifaMedia * (im.getConsumo() - im.getCreditoGasto()));
+                } else {
+                    if (ParametrosConsumo.COBRANCA_IMEDIATA) {
+                        im.setCustoCons(tarifaMedia * (1 - descontoAplicado) * im.getCreditoGerado());
+                    } else {
+                        im.setCustoCons(tarifaMedia * (1 - descontoAplicado) * im.getCreditoGasto());
+                    }
+                    im.setCustoDist(tarifaMedia * getConsumoMinimo());
+                }
                 //creditoGerado =  resto;
-                //formatTrunc();//formata valores para 2 digitos depois da virgula
+
+                im.setEconomia(im.getCustoAntigo() - (im.getCustoCons() + im.getCustoDist()));
+                im.formatTrunc();
             }
-            //credEx = d.calculaCustos(credEx);
+            //credEx = im.calculaCustos(credEx);
         }
         return credEx;
     }
 
     /**
-     * Calcula um valor de cradito inicial baseado no consumo descartando o
-     * minimo.
+     * Calcula um valor de credito inicial baseado no consumo descartando o
+     * mínimo.
      *
      * @return O credito calculado.
      */
-    public Double calculoCreditosInicial() {
+    public Double calculoCreditoMedio() {
         Double soma = 0.;
-        for (InfoMensal d : dadosMensais)
+        for (InfoMensal d : dadosMensais) {
             soma += d.getConsumo() >= getConsumoMinimo()
                     ? d.getConsumo() - getConsumoMinimo()
                     : 0;
-        System.out.println(soma);
+        }
+        //System.out.println(soma);
         return soma / dadosMensais.size();
     }
 
     /**
-     * Calcula a total de custo original da distribuidora para os dados meses.
+     * Calcula a total de custo Antigo da distribuidora para os dados meses.
+     *
+     * @return valor total do custo antigo da distribuidora.
+     */
+    public Double custoTotalAntigo() {
+        Double soma = 0.;
+        for (InfoMensal c : dadosMensais) {
+            soma += c.getCustoAntigo();
+        }
+
+        return trunc2(soma);
+    }
+
+    /**
+     * Calcula a total de custo da distribuidora para os dados meses.
      *
      * @return valor total do custo da distribuidora.
      */
     public Double custoTotalDist() {
         Double soma = 0.;
-        for (InfoMensal c : dadosMensais)
+        for (InfoMensal c : dadosMensais) {
             soma += c.getCustoDist();
-
+        }
         return trunc2(soma);
     }
 
@@ -162,14 +190,19 @@ public class EmpresaCliente extends Empresa {
      */
     public Double custoTotalCons() {
         Double soma = 0.;
-        for (InfoMensal c : dadosMensais)
+        for (InfoMensal c : dadosMensais) {
             soma += c.getCustoCons();
+        }
 
         return trunc2(soma);
     }
 
+    public Double getEconomiaPercent() {
+        return getEconomia() / custoTotalAntigo() * 100;
+    }
+
     public Double getEconomia() {
-        return (1 - custoTotalCons() / custoTotalDist()) * 100;
+        return (custoTotalAntigo() - custoTotalDist() - custoTotalCons());
     }
 
     /**
@@ -201,12 +234,26 @@ public class EmpresaCliente extends Empresa {
         orderaDadosMensais(); //Ordena 
         int a = 0;//inicia a comparacao
         short f = 4095;
-        for (InfoMensal im : dadosMensais)
+        for (InfoMensal im : dadosMensais) {
             if (a != im.getMes().getNum()) {
                 a = im.getMes().getNum();
                 f -= Math.pow(2, a - 1);
             }
+        }
         return f;
+    }
+
+    public SimpleDataConsumo toSimpleData() {
+        Meses[] meses = new Meses[12];
+        double[] consumo = new double[12];
+        int i = 0;
+        for (InfoMensal im : dadosMensais) {
+            meses[i] = im.getMes();
+            consumo[i] = im.getConsumo();
+            i++;
+        }
+        return new SimpleDataConsumo(tipoRede, cota, tarifaMedia, descontoAplicado,
+                nome, endereco, tipo, dadosMensais.get(0).getAno(), consumo, meses);
     }
 
     @Override

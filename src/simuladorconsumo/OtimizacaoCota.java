@@ -39,7 +39,7 @@ public class OtimizacaoCota {
                     d.setCreditoGasto(empG.getGeracaoMes(d.getMes()).getGeracao() * cota);
                 empAux.calculoCustosCredit(empG);
                 //System.out.println(out.get((cota*1000)));
-                economia[i] = empAux.getEconomia();
+                economia[i] = empAux.getEconomiaPercent();
             } else
                 economia[i] = .0;
             cotas[i] = cota;

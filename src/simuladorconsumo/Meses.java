@@ -6,6 +6,7 @@
 package simuladorconsumo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -26,7 +27,13 @@ public enum Meses {
     int getNum() {
         return num;
     }
+    
 
+    public static List<Meses> getValues(){
+        return Arrays.asList(values());
+        
+    }
+ 
     /**
      * Transforma valor inteiro em Mês
      *

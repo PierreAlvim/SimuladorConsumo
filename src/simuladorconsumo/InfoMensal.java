@@ -24,46 +24,44 @@ public class InfoMensal {
     private DoubleProperty consumo;
     private DoubleProperty creditoGasto;
     private DoubleProperty creditoGerado;
-    private DoubleProperty custoDist;
+    private DoubleProperty custoAntigo;
     private DoubleProperty custoCons;
+    private DoubleProperty custoDist;
     private DoubleProperty consumoMinimo;
+    private DoubleProperty economia;
 
     public InfoMensal() {
     }
 
-    public InfoMensal(Meses mes, double consumo, double credito, int ano, double custoDist, double cutoCons, double consumoMinimo) {
+    public InfoMensal(Meses mes, double consumo, double credito, int ano, double custoAntigo, double custoCons, double custoDist, double consumoMinimo, double economia) {
 
-        this.ano = new SimpleIntegerProperty();
-        this.consumo = new SimpleDoubleProperty();
-        this.creditoGasto = new SimpleDoubleProperty();
+        this.ano = new SimpleIntegerProperty(ano);
+        this.consumo = new SimpleDoubleProperty(consumo);
+        this.creditoGasto = new SimpleDoubleProperty(credito);
         this.creditoGerado = new SimpleDoubleProperty();
-        this.custoDist = new SimpleDoubleProperty();
-        this.custoCons = new SimpleDoubleProperty();
-        this.consumoMinimo = new SimpleDoubleProperty();
+        this.custoAntigo = new SimpleDoubleProperty(custoAntigo);
+        this.custoCons = new SimpleDoubleProperty(custoCons);
+        this.custoDist = new SimpleDoubleProperty(custoDist);
+        this.economia = new SimpleDoubleProperty(economia);
+        this.consumoMinimo = new SimpleDoubleProperty(consumoMinimo);
         
         this.mes = mes;
-        this.consumo.set(consumo);
-        this.creditoGasto.set(credito);
-        this.ano.set(ano);
-        this.custoDist.set(custoDist);
-        this.creditoGerado.set(cutoCons);
-        this.consumoMinimo.set(consumoMinimo);
 //        this.creditoGerado = cutoCons;
 //        this.consumoMinimo = consumoMinimo;
     }
 
     public InfoMensal(Meses mes, double consumo, int ano) {
 
-        this.ano = new SimpleIntegerProperty();
-        this.consumo = new SimpleDoubleProperty();
+        this.ano = new SimpleIntegerProperty(ano);
+        this.consumo = new SimpleDoubleProperty(consumo);
         this.creditoGasto = new SimpleDoubleProperty();
         this.creditoGerado = new SimpleDoubleProperty();
-        this.custoDist = new SimpleDoubleProperty();
+        this.custoAntigo = new SimpleDoubleProperty();
         this.custoCons = new SimpleDoubleProperty();
+        this.custoDist = new SimpleDoubleProperty();
+        this.economia = new SimpleDoubleProperty();
         this.consumoMinimo = new SimpleDoubleProperty();
         this.mes = mes;
-        this.consumo.set(consumo);
-        this.ano.set(ano);
 
     }
 
@@ -107,6 +105,14 @@ public class InfoMensal {
         this.ano.set(ano);
     }
 
+    public double getCustoAntigo() {
+        return custoAntigo.get();
+    }
+
+    public void setCustoAntigo(double custoAntigo) {
+        this.custoAntigo.set(custoAntigo);
+    }
+    
     public double getCustoDist() {
         return custoDist.get();
     }
@@ -129,62 +135,74 @@ public class InfoMensal {
 
     public void setCreditoGerado(double creditoGerado) {
         this.creditoGerado.set(creditoGerado);
+        
+    }
+    public double getEconomia() {
+        return economia.get();
     }
 
-    public IntegerProperty getAnoProp() {
+    public void setEconomia(double economia) {
+        this.economia.set(economia);
+    }
+
+    public IntegerProperty anoProperty() {
         return ano;
     }
 
-    public void setAnoProp(IntegerProperty anoProp) {
-        this.ano = anoProp;
-    }
+//    public void setAnoProp(IntegerProperty anoProp) {
+//        this.ano = anoProp;
+//    }
 
-    public DoubleProperty getConsumoProp() {
+    public DoubleProperty consumoProperty() {
         return consumo;
     }
 
-    public void setConsumoProp(DoubleProperty consumoProp) {
-        this.consumo = consumoProp;
-    }
+//    public void setConsumoProp(DoubleProperty consumoProp) {
+//        this.consumo = consumoProp;
+//    }
 
-    public DoubleProperty getCreditoGastoProp() {
+    public DoubleProperty creditoGastoProperty() {
         return creditoGasto;
     }
 
-    public void setCreditoGastoProp(DoubleProperty creditoGastoProp) {
-        this.creditoGasto = creditoGastoProp;
-    }
+//    public void setCreditoGastoProp(DoubleProperty creditoGastoProp) {
+//        this.creditoGasto = creditoGastoProp;
+//    }
 
-    public DoubleProperty getCreditoGeradoProp() {
+    public DoubleProperty creditoGeradoProperty() {
         return creditoGerado;
     }
 
-    public void setCreditoGeradoProp(DoubleProperty creditoGeradoProp) {
-        this.creditoGerado = creditoGeradoProp;
-    }
+//    public void setCreditoGeradoProp(DoubleProperty creditoGeradoProp) {
+//        this.creditoGerado = creditoGeradoProp;
+//    }
 
-    public DoubleProperty getCustoDistProp() {
+    public DoubleProperty custoDistProperty() {
         return custoDist;
     }
 
-    public void setCustoDistProp(DoubleProperty custoDistProp) {
-        this.custoDist = custoDistProp;
-    }
+//    public void setCustoDistProp(DoubleProperty custoDistProp) {
+//        this.custoDist = custoDistProp;
+//    }
 
-    public DoubleProperty getCustoConsProp() {
+    public DoubleProperty custoConsProperty() {
         return custoCons;
     }
 
-    public void setCustoConsProp(DoubleProperty custoConsProp) {
-        this.custoCons = custoConsProp;
-    }
+//    public void setCustoConsProp(DoubleProperty custoConsProp) {
+//        this.custoCons = custoConsProp;
+//    }
 
-    public DoubleProperty getConsumoMinimoProp() {
+    public DoubleProperty consumoMinimoProperty() {
         return consumoMinimo;
     }
 
-    public void setConsumoMinimoProp(DoubleProperty roconsumoMinimoProp) {
-        this.consumoMinimo = roconsumoMinimoProp;
+//    public void setConsumoMinimoProp(DoubleProperty roconsumoMinimoProp) {
+//        this.consumoMinimo = roconsumoMinimoProp;
+//    }
+    
+    public DoubleProperty economiaProperty() {
+        return economia;
     }
 
     /**
@@ -205,28 +223,31 @@ public class InfoMensal {
         creditoGasto.set(-1);
         creditoGerado.set(-1);
         custoCons.set(-1);
-        custoDist.set(-1);
+        custoAntigo.set(-1);
         consumo.set(-1);
         consumoMinimo.set(-1);
     }
 
-    private void formatTrunc() {
+    public void formatTrunc() {
         creditoGasto.set(CalculoCreditos.trunc2(creditoGasto.get()));
         creditoGerado.set(CalculoCreditos.trunc2(creditoGerado.get()));
         custoCons.set(CalculoCreditos.trunc2(custoCons.get()));
+        custoAntigo.set(CalculoCreditos.trunc2(custoAntigo.get()));
         custoDist.set(CalculoCreditos.trunc2(custoDist.get()));
+        economia.set(CalculoCreditos.trunc2(economia.get()));
     }
 
     @Override
     public InfoMensal clone() {
-        return new InfoMensal(mes, consumo.get(), creditoGasto.get(), ano.get(), custoDist.get(), custoCons.get(), consumoMinimo.get());
+        return new InfoMensal(mes, consumo.get(), creditoGasto.get(), ano.get(), custoAntigo.get(), custoCons.get(), custoDist.get(), consumoMinimo.get(), economia.get());
     }
 
     @Override
     public String toString() {
         return "ConsumoMensal{" + ", mes=" + mes
-                + ", consumo=" + consumo + ", credito=" + creditoGasto + ", ano="
-                + ano + ", custoDist=" + custoDist + ", custoCons=" + custoCons + '}';
+                + ", consumo=" + consumo.get() + ", credito=" + creditoGasto.get() + ", ano="
+                + ano.get() + ", custoDist=" + custoAntigo.get() + ", custoCons=" + custoCons.get()
+                + ", custoDist=" + custoDist.get() + ", economia=" + economia.get() + '}';
     }
 
 }

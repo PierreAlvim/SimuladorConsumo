@@ -13,6 +13,10 @@ public class ParametrosConsumo {
     public static double TARIFA_DISTR = 0.78570090;
     public static double DESCONTO = 0.15;
     public static double TARIFA_GERA = (TARIFA_DISTR * (1-DESCONTO));
+    /**
+     * Determina se os creditos serão cobrados assim que gerados, ou só quando forem gastos.
+     */
+    public static boolean COBRANCA_IMEDIATA = true;
     //public static Empresa empresaGeradora = new Empresa("Zecon", "Santos Dummond", "Geradora");
     
     public static void atualizaTarifaGeracao()

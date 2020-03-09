@@ -20,29 +20,29 @@ public class OtimizacaoIterativa {
 
     static void runOtimizacao(LineChart.Series<Number, Number> list, EmpresaCliente empC, EmpresaGeradora empG) {
         list.getData().clear();
-        System.out.println("TAMANHO:"+ list.getData().size());
+        //System.out.println("TAMANHO:"+ list.getData().size());
         passo = 0.004 / (MAX_POINTS);
         EmpresaCliente auxC = empC.clone();
         //Animação inicial (envolver a cota primeira)
         double cotaInicio = empC.getCota();
         ArrayList<XYChart.Data<Double,Double>> picosEconomia = new ArrayList();
-        double econoAnt = auxC.getEconomia();// ;
+        double econoAnt = auxC.getEconomiaPercent();// ;
         XYChart.Data<Double,Double> econoMax = new XYChart.Data<>(cotaInicio, .0);
         int j = 0;
         for (int i = -MAX_POINTS / 2; i < MAX_POINTS / 2; i++) {
             double cota = cotaInicio + i * passo;
             auxC.setCota(cota);
             auxC.calculoCustosCredit(empG);
-            double eco = auxC.getEconomia();
+            double eco = auxC.getEconomiaPercent();
             if (econoAnt > eco)
                 picosEconomia.add(new XYChart.Data<>((cota - i * passo), econoAnt));
             if (eco > econoMax.getYValue()) {
                 econoMax.setXValue(cota);
                 econoMax.setYValue(eco);
                 j = 0;
-                System.out.println("Maior:" + eco);
+                //System.out.println("Maior:" + eco);
             }
-            System.out.println(cota + ":" + eco);
+            //System.out.println(cota + ":" + eco);
             econoAnt = eco;
             list.getData().add(new XYChart.Data(cota, eco));
             j++;
@@ -54,13 +54,13 @@ public class OtimizacaoIterativa {
             double cota = cotaInicio + i * passo;
             auxC.setCota(cota);
             auxC.calculoCustosCredit(empG);
-            double eco = auxC.getEconomia();
+            double eco = auxC.getEconomiaPercent();
             if (econoAnt > eco)
                 picosEconomia.add(new XYChart.Data<>((cota-i*passo), eco));
             if (eco > econoMax.getYValue()) {
                 econoMax.setXValue(cota);
                 econoMax.setYValue(eco);
-                System.out.println("distancia: " + j);
+                //System.out.println("distancia: " + j);
                 j = 0;
             }
             econoAnt = eco;
