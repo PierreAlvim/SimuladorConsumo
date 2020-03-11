@@ -117,7 +117,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private Label lblCustoConsOut;
     @FXML
-    private Label lblCustoDistOut;
+    private Label lblCustoAntigoOut;
     @FXML
     private BarChart<Meses, Number> lcCustos;
     @FXML
@@ -329,15 +329,15 @@ public class FXMLDocumentController implements Initializable {
      * (%).
      * @param economiaRS economia gerada em Reias (R$).
      */
-    private void atualizaCaixaTexto(Double credEx, Double custoCons, Double custoDist, Double cota, Double economia, Double economiaRS) {
+    private void atualizaCaixaTexto(Double credEx, Double custoCons, Double custoAntigo, Double cota, Double economia, Double economiaRS) {
         if (credEx != null) {
             lblCreditoExOut.setText(trunc2(credEx) + "kWh");
         }
         if (custoCons != null) {
             lblCustoConsOut.setText("R$ " + trunc2(custoCons));
         }
-        if (custoDist != null) {
-            lblCustoDistOut.setText("R$ " + trunc2(custoDist));
+        if (custoAntigo != null) {
+            lblCustoAntigoOut.setText("R$ " + trunc2(custoAntigo));
         }
         if (cota != null) {
             lblCotaOut.setText("" + trunc6(cota * 100) + "%");
@@ -570,7 +570,7 @@ public class FXMLDocumentController implements Initializable {
         if (aux) {
             //simula creditos e custos usando a empresa geradora e parametros, retorna creditos excedentes caso exista
             Double credEx = empClient.calculoCustosCredit(empGera);
-            atualizaCaixaTexto(credEx, empClient.custoTotalCons(), empClient.custoTotalDist(), empClient.getCota(), empClient.getEconomiaPercent(), empClient.getEconomia());
+            atualizaCaixaTexto(credEx, empClient.custoTotalCons(), empClient.custoTotalAntigo(), empClient.getCota(), empClient.getEconomiaPercent(), empClient.getEconomia());
 
             Platform.runLater(() -> {
                 atualizaTabela();

@@ -1,4 +1,7 @@
 /test/
+dados_clientes/
+dist_28_02_19/
+
 ### NetBeans ###
 **/nbproject/private/
 **/nbproject/Makefile-*.mk

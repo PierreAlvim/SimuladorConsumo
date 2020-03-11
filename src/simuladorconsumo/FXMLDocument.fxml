@@ -271,7 +271,7 @@
                               </VBox>
                               <VBox layoutX="226.0" layoutY="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="60.0">
                                  <children>
-                                    <Label text="Custo total Previsto">
+                                    <Label text="Consórcio">
                                        <font>
                                           <Font name="System Bold" size="14.0" />
                                        </font>
@@ -323,7 +323,7 @@
                               </VBox>
                               <VBox layoutX="221.0" layoutY="70.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="60.0">
                                  <children>
-                                    <Label text="Custo total Atual">
+                                    <Label text="Cemig Atual">
                                        <font>
                                           <Font name="System Bold" size="13.0" />
                                        </font>
@@ -331,7 +331,7 @@
                                           <Tooltip text="Custo de energia anual com a concessionária" />
                                        </tooltip>
                                     </Label>
-                                    <Label fx:id="lblCustoDistOut" opacity="0.75" text="Não calculado" />
+                                    <Label fx:id="lblCustoAntigoOut" opacity="0.75" text="Não calculado" />
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
