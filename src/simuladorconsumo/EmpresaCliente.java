@@ -9,6 +9,8 @@ import databasejson.SimpleDataConsumo;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import static simuladorconsumo.CalculoCreditos.trunc2;
 import simuladorconsumo.ParametrosConsumo.TipoRedeEletrica;
 
@@ -71,11 +73,14 @@ public class EmpresaCliente extends Empresa {
 
     public boolean addDadoMensal(InfoMensal inf) {
         inf.setConsumoMinimo(getConsumoMinimo());
-        return dadosMensais.add(inf);
+        boolean ret = dadosMensais.add(inf);
+        orderaDadosMensais();
+        return ret;
     }
 
     public void setDadosMensais(List<InfoMensal> dadosMensais) {
         this.dadosMensais = dadosMensais;
+        orderaDadosMensais();
     }
 
     public void clearDadosMensais() {
@@ -206,7 +211,7 @@ public class EmpresaCliente extends Empresa {
     }
 
     /**
-     * Ordena os dados mensais por mês.
+     * Ordena os dados mensais por mês e ano.
      */
     private void orderaDadosMensais() {
         dadosMensais.sort((InfoMensal t, InfoMensal t1) -> {

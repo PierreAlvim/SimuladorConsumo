@@ -25,6 +25,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -73,10 +74,10 @@ public class FXMLDocumentController implements Initializable {
     private InfoMensal ultimoConsumoAdd;//ultimo consumo adicionado
 
     //Curvas para Gráfico Consumo
-    private XYChart.Series seriesConsumo;
-    private XYChart.Series seriesMinimo;
-    private XYChart.Series seriesCreditoGast;
-    private XYChart.Series seriesCreditoGera;
+    private XYChart.Series<StringExpression, DoubleProperty> seriesConsumo;
+    private XYChart.Series<StringExpression, DoubleProperty> seriesMinimo;
+    private XYChart.Series<StringExpression, DoubleProperty> seriesCreditoGast;
+    private XYChart.Series<StringExpression, DoubleProperty> seriesCreditoGera;
 
     //Curva para Gráfico Consumo
     private XYChart.Series seriesCustDis;
@@ -120,7 +121,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private BarChart<Meses, Number> lcCustos;
     @FXML
-    private AreaChart<String, DoubleProperty> areaChartConsumo;
+    private AreaChart<StringExpression, DoubleProperty> areaChartConsumo;
     @FXML
     private Label lblCotaOut;
     @FXML
@@ -158,13 +159,15 @@ public class FXMLDocumentController implements Initializable {
         seriesMinimo = new XYChart.Series();
         seriesMinimo.setName("Minimo");
         areaChartConsumo.getData().add(seriesMinimo);
+
         seriesCreditoGast = new XYChart.Series();
         seriesCreditoGast.setName("Credito Gasto");
         areaChartConsumo.getData().add(seriesCreditoGast);
-
+        
         seriesCreditoGera = new XYChart.Series();
         seriesCreditoGera.setName("Credito Gerado");
         areaChartConsumo.getData().add(seriesCreditoGera);
+
         seriesConsumo = new XYChart.Series();
         seriesConsumo.setName("Consumo");
         areaChartConsumo.getData().add(seriesConsumo);
@@ -173,6 +176,7 @@ public class FXMLDocumentController implements Initializable {
         seriesCustDis = new XYChart.Series();
         seriesCustDis.setName("Custo Distribuidora");
         lcCustos.getData().add(seriesCustDis);
+
         seriesCustCons = new XYChart.Series();
         seriesCustCons.setName("Custo Total Consórcio");
         lcCustos.getData().add(seriesCustCons);
@@ -317,11 +321,13 @@ public class FXMLDocumentController implements Initializable {
      * Atualiza as informações das caixas de texto, para manter o valor original
      * use valores null.
      *
-     * @param credEx credito Excedido no final da simulação
-     * @param custoCons custo total com consorcio
-     * @param custoDist custo original com a distribuidora
-     * @param cota cota do consorcio calculada
-     * @param economia economia gerada com adesão ao consorcio
+     * @param credEx credito Excedido no final da simulação.
+     * @param custoCons custo total com consorcio.
+     * @param custoDist custo original com a distribuidora.
+     * @param cota cota do consorcio calculada.
+     * @param economia economia gerada com adesão ao consorcio em porcentagem
+     * (%).
+     * @param economiaRS economia gerada em Reias (R$).
      */
     private void atualizaCaixaTexto(Double credEx, Double custoCons, Double custoDist, Double cota, Double economia, Double economiaRS) {
         if (credEx != null) {
@@ -347,13 +353,15 @@ public class FXMLDocumentController implements Initializable {
 
     private void adicionaPontoGraficoConsumo(InfoMensal c) {
         //populating the series with data and binding them for future changes
-        StringExpression xname = Bindings.concat(c.getAno() + "/" + c.getMes());
-
+        
+        int pos = empClient.getDadosMensais().indexOf(c); /*salva a posição original do item na lista de dados*/
+        
+        StringExpression xname = Bindings.concat(c.getAno(), "/", c.getMes());
         if (c.getConsumoMinimo() > 0) {
             XYChart.Data d0 = new XYChart.Data();
             d0.YValueProperty().bind(c.consumoMinimoProperty());
             d0.XValueProperty().bind(xname);
-            seriesMinimo.getData().add(d0);
+            seriesMinimo.getData().add(pos,d0);
             c.consumoMinimoProperty().addListener((Observable obs) -> {
                 if (!empClient.getDadosMensais().contains(c)) {
                     seriesMinimo.getData().remove(d0);
@@ -365,27 +373,29 @@ public class FXMLDocumentController implements Initializable {
         XYChart.Data d1 = new XYChart.Data();
         d1.YValueProperty().bind(c.creditoGastoProperty());
         d1.XValueProperty().bind(xname);
-        seriesCreditoGast.getData().add(d1);
+        seriesCreditoGast.getData().add(pos,d1);
         c.creditoGastoProperty().addListener((Observable obs) -> {
             if (!empClient.getDadosMensais().contains(c)) {
                 seriesCreditoGast.getData().remove(d1);
                 //System.out.println("Listener CALLED");//#debug
             }
         });
+
         XYChart.Data d2 = new XYChart.Data();
         d2.YValueProperty().bind(c.creditoGeradoProperty());
         d2.XValueProperty().bind(xname);
-        seriesCreditoGera.getData().add(d2);
+        seriesCreditoGera.getData().add(pos,d2);
         c.creditoGeradoProperty().addListener((Observable obs) -> {
             if (!empClient.getDadosMensais().contains(c)) {
                 seriesCreditoGera.getData().remove(d2);
-                //System.out.println("Listener CALLED");//#debug
+                System.out.println("Listener CALLED");//#debug
             }
         });
+
         XYChart.Data d3 = new XYChart.Data();
         d3.YValueProperty().bind(c.consumoProperty());
         d3.XValueProperty().bind(xname);
-        seriesConsumo.getData().add(d3);
+        seriesConsumo.getData().add(pos,d3);
         c.consumoProperty().addListener((Observable obs) -> {
             if (!empClient.getDadosMensais().contains(c)) {
                 seriesConsumo.getData().remove(d3);
@@ -393,10 +403,6 @@ public class FXMLDocumentController implements Initializable {
             }
         });
 
-    }
-
-    private void atualizaPontoGraficoConsumo(InfoMensal c) {
-        seriesMinimo.getData().get(0);
     }
 
     private void adicionaPontoGraficoCusto(InfoMensal c) {
@@ -420,7 +426,6 @@ public class FXMLDocumentController implements Initializable {
         //Platform.runLater(() -> {
         for (InfoMensal c : empClient.getDadosMensais()) {
             adicionaPontoGraficoConsumo(c);
-
             System.out.println(c.getMes().getNum());//#debug
         }
         //});
@@ -431,6 +436,7 @@ public class FXMLDocumentController implements Initializable {
 //            t.getData().clear();
 //        });
         seriesCustCons.getData().clear();
+        seriesCustDis.getData().clear();
         //System.out.println("ordem custo");
         //Platform.runLater(() -> {
         for (InfoMensal c : empClient.getDadosMensais()) {
@@ -465,7 +471,6 @@ public class FXMLDocumentController implements Initializable {
             XYChart.Data point = new XYChart.Data(xname, p.getValue());
 
             if (destaque) {
-                //System.out.println("pos:" + seriesOtimiza.getData().indexOf(point));
 
                 final Region plotpoint = new Region();
                 final Circle c = new Circle(2);
@@ -503,7 +508,7 @@ public class FXMLDocumentController implements Initializable {
             if (cbMes.getValue() != null && !"".equals(tfConsumo.getText()) && !"".equals(tfAno.getText())) {
                 if (empClient.getDadosMensais().size() < 12) {
 
-                    System.out.println("------" + tfConsumo.getText() + "-------");//debug
+                    System.out.println("-------" + tfConsumo.getText() + "-------");//debug
                     float consumo = Float.parseFloat(tfConsumo.getText());
                     int ano = Integer.parseInt(tfAno.getText());
                     ultimoConsumoAdd = new InfoMensal(cbMes.getValue(), consumo, ano);
@@ -607,11 +612,12 @@ public class FXMLDocumentController implements Initializable {
             ultimoConsumoAdd = null;
             Platform.runLater(() -> {
                 atualizaTabela();
+                atualizaCampos();
                 atualizaGraficoConsumo();
                 atualizaGraficoCusto();
             });
-
         }
+        
     }
 
     @FXML
@@ -742,10 +748,10 @@ public class FXMLDocumentController implements Initializable {
         dialog.setHeaderText("Escolha qual carregar.");
         dialog.setContentText("Arquivos encontrados:");
 
-        // Traditional way to get the response value.
         Optional<EmpresaCliente> result = dialog.showAndWait();
 
         if (result.isPresent()) {
+            empClient.clearDadosMensais();
             empClient = result.get();
             if (empClient.getDescontoAplicado() == null) {
                 empClient.setDescontoAplicado(.0);
@@ -754,6 +760,11 @@ public class FXMLDocumentController implements Initializable {
                 empClient.setTarifaMedia(.0);
             }
             Platform.runLater(() -> {
+                
+                for (InfoMensal im : empClient.getDadosMensais()) {
+                    adicionaPontoGraficoConsumo(im);
+                }
+                ultimoConsumoAdd = empClient.getDadosMensais().get(empClient.getDadosMensais().size()-1);
                 atualizaCampos();
                 atualizaTabela();
 
@@ -831,6 +842,5 @@ public class FXMLDocumentController implements Initializable {
     private void onAction_cbMes(ActionEvent event) {
         tfMesAux.setText(cbMes.getValue().name());
     }
-
 
 }
